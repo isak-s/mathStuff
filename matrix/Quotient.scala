@@ -19,7 +19,10 @@ class Quotient(val num: Int, val den: Int) {
 
     }
 
-    override def toString(): String = {s"${num}/${den}"}
+    override def toString(): String = {
+        if (den == 1) {s"${num}"}
+        else {s"${num}/${den}"}
+    }
 }
 
 object Quotient {
@@ -39,4 +42,13 @@ object Quotient {
     given QuotientConversion: Conversion[Int, Quotient] with {
         def apply(n: Int): Quotient = new Quotient(n, 1)
     }
+
+    extension (inlineContext: StringContext)
+        // Custom string interpolator
+        // Usage:
+        // val q = q"2/7"
+        def q(args: Any*): Quotient = {
+            val Array(num, den) = inlineContext.parts.head.split("/")
+            new Quotient(num.trim.toInt, den.trim.toInt)
+        }
 }
