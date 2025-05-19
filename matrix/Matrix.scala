@@ -1,4 +1,7 @@
-private class Matrix(val elements: Array[Array[Int]]) {
+import scala.language.implicitConversions
+import Quotient.QuotientConversion
+
+private class Matrix(val elements: Array[Array[Quotient]]) {
 
     val dim: (Int, Int) = (elements.length, elements.head.length)
 
@@ -8,7 +11,7 @@ private class Matrix(val elements: Array[Array[Int]]) {
       * @param matrix
       */
     infix def *(matrix: Matrix): Matrix = {
-        assert(this.dim._1 == matrix.dim._2)
+        require(this.dim._1 == matrix.dim._2)
 
         val newMatrix = Matrix.zeroMatrix(this.dim._1, matrix.dim._2)
 
@@ -24,24 +27,32 @@ private class Matrix(val elements: Array[Array[Int]]) {
         new Matrix(elements.clone().map(row => row.map(e => e*scalar)))
     }
 
-    // infix def *() {
-
-    // }
-
-    def set(location: (Int, Int), thing: Int) = {
-        assert(location._1 <= dim._1 && location._2 <= dim._2)
+    def set(location: (Int, Int), thing: Quotient) = {
+        require(location._1 <= dim._1 && location._2 <= dim._2)
         elements(location._1)(location._2) = thing
     }
 
+    lazy val determinant = {
+
+    }
+
+    lazy val adjunct = {
+
+    }
+
     override def toString(): String = {
-        elements.map(row => row.mkString("(", " ", ")")).mkString("\n")
+        val maxLength = elements.flatten.map(_.toString.length).max
+        elements.map(row => row
+            .map(n => n.toString + " " * (maxLength - n.toString.length))
+            .mkString("(", " ", ")")).mkString("\n")
     }
 
 }
 
 object Matrix {
     def apply(mArr: Array[Array[Int]]) = {
-        new Matrix(mArr)
+        require(mArr.forall(row => row.length == mArr.head.length))
+        new Matrix(mArr.map(_.map(i => i: Quotient)))
     }
 
     def zeroMatrix(dim: (Int, Int)) = {
