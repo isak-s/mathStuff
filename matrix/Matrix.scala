@@ -1,3 +1,5 @@
+package math
+
 import scala.language.implicitConversions
 import Quotient.QuotientConversion
 
@@ -50,14 +52,15 @@ private class Matrix(val elements: Array[Array[Quotient]]) {
 }
 
 object Matrix {
-    def apply(mArr: Array[Array[Int]]): Matrix = new Matrix(mArr.map(_.map(i => new Quotient(i, 1))))
-    def apply(mArr: Array[Array[Quotient]]): Matrix = new Matrix(mArr)
-    def apply(mArr: Array[Array[Int | Quotient]]): Matrix = {
-        new Matrix(mArr.map(_.map {
-            case q: Quotient => q
-            case i: Int      => new Quotient(i, 1)
-    }))
-}
+
+    def apply(args: Array[Int | Quotient]*) = {
+        val data: Array[Array[Quotient]] = args.map(_.map {
+            case i: Int => Quotient(i, 1)     // Convert Int to Quotient
+            case q: Quotient => q            // Keep Quotient as is
+            }).toArray
+        new Matrix(data)
+    }
+
     def zeroMatrix(dim: (Int, Int)) = {
         new Matrix(Array.fill(dim._1)(Array.fill(dim._2)(0)))
     }

@@ -1,6 +1,8 @@
+package math
+
 // numerator = num
 // denominator = den
-class Quotient(val num: Int, val den: Int) {
+private class Quotient(val num: Int, val den: Int) {
 
     infix def *(o: Int) = new Quotient(num*o, den) // reduce ??
     infix def /(o: Int) = new Quotient(num, den*o) // reduce ??
@@ -26,6 +28,15 @@ class Quotient(val num: Int, val den: Int) {
 }
 
 object Quotient {
+
+    def apply(num: Int, den: Int) = {
+        if (num == 0) {
+            new Quotient(0, 1)
+        }
+        else {
+            new Quotient(num, den)
+        }
+    }
     def fromRational() = {
         ???
     }
@@ -38,17 +49,20 @@ object Quotient {
     def lcm(a: Int, b: Int) = {
 
     }
+
+    private def simplifyFraction(q: Quotient) = {
+
+    }
+
         // Add conversion from Int or double to quotient
     given QuotientConversion: Conversion[Int, Quotient] with {
         def apply(n: Int): Quotient = new Quotient(n, 1)
     }
 
     extension (inlineContext: StringContext)
-        // Custom string interpolator
-        // Usage:
-        // val q = q"2/7"
         def q(args: Any*): Quotient = {
-            val Array(num, den) = inlineContext.parts.head.split("/")
-            new Quotient(num.trim.toInt, den.trim.toInt)
+            val raw = inlineContext.s(args*)
+            val Array(num, den) = raw.split("/").map(_.trim)
+            Quotient(num.toInt, den.toInt)
         }
 }
