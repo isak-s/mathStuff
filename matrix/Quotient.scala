@@ -4,20 +4,19 @@ package math
 // denominator = den
 private class Quotient(val num: Int, val den: Int) {
 
-    infix def *(o: Int) = new Quotient(num*o, den) // reduce ??
-    infix def /(o: Int) = new Quotient(num, den*o) // reduce ??
+    infix def *(o: Int) = Quotient(num*o, den)
+    infix def /(o: Int) = Quotient(num, den*o)
 
-    infix def *(o: Quotient) = new Quotient(num*o.num, den*o.den) // reduce ??
-    infix def /(o: Quotient) = new Quotient(num*o.den, den*o.num) // reduce ??
+    infix def *(o: Quotient) = Quotient(num*o.num, den*o.den)
+    infix def /(o: Quotient) = Quotient(num*o.den, den*o.num)
 
-    infix def +(o: Quotient) = {
-        val gcd = Quotient.gcd(den, o.den)
-        if (gcd == 1) {
-            new Quotient(num*o.den + o.num*den, den*o.den)
-        }
-        else {
-            new Quotient(num*o.den + o.num*den, den*o.den) // TODO: reduce
-        }
+    infix def +(o: Quotient) = Quotient(num*o.den + o.num*den, den*o.den)
+
+    lazy val primeFactorsNumerator = {
+
+    }
+
+    lazy val primeFactorsDenominator = {
 
     }
 
@@ -33,8 +32,10 @@ object Quotient {
         if (num == 0) {
             new Quotient(0, 1)
         }
+
         else {
-            new Quotient(num, den)
+            val d = gcd(den, num)
+            new Quotient(num/d, den/d)
         }
     }
     def fromRational() = {
@@ -47,10 +48,6 @@ object Quotient {
     }
 
     def lcm(a: Int, b: Int) = {
-
-    }
-
-    private def simplifyFraction(q: Quotient) = {
 
     }
 
