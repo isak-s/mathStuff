@@ -10,6 +10,9 @@ private class Quotient(val num: Int, val den: Int) extends Cloneable {
     infix def *(o: Quotient) = Quotient(num*o.num, den*o.den)
     infix def /(o: Quotient) = Quotient(num*o.den, den*o.num)
 
+    infix def +(o: Int) = Quotient(num+o*den, den)
+    infix def -(o: Int) = Quotient(num-o*den, den)
+
     infix def +(o: Quotient) = Quotient(num*o.den + o.num*den, den*o.den)
     infix def -(o: Quotient) = Quotient(num*o.den - o.num*den, den*o.den)
 
