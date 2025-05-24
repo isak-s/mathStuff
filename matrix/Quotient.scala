@@ -2,7 +2,7 @@ package math
 
 // numerator = num
 // denominator = den
-private class Quotient(val num: Int, val den: Int) {
+private class Quotient(val num: Int, val den: Int) extends Cloneable {
 
     infix def *(o: Int) = Quotient(num*o, den)
     infix def /(o: Int) = Quotient(num, den*o)
@@ -11,18 +11,15 @@ private class Quotient(val num: Int, val den: Int) {
     infix def /(o: Quotient) = Quotient(num*o.den, den*o.num)
 
     infix def +(o: Quotient) = Quotient(num*o.den + o.num*den, den*o.den)
-
-    lazy val primeFactorsNumerator = {
-
-    }
-
-    lazy val primeFactorsDenominator = {
-
-    }
+    infix def -(o: Quotient) = Quotient(num*o.den - o.num*den, den*o.den)
 
     override def toString(): String = {
         if (den == 1) {s"${num}"}
         else {s"${num}/${den}"}
+    }
+
+    override def clone: Quotient = {
+        new Quotient(num, den)
     }
 }
 

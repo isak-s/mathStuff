@@ -34,8 +34,29 @@ private class Matrix(val elements: Array[Array[Quotient]]) {
         elements(location._1)(location._2) = thing
     }
 
-    lazy val determinant = {
+    def get(location: (Int, Int)) = {
+        require(location._1 <= dim._1 && location._2 <= dim._2)
+        elements(location._1)(location._2)
+    }
 
+    lazy val determinant = {
+        require(dim._1 == dim._2)
+        val det: Matrix = deepcopy
+
+        for (k <- Range(0, dim._1-1)) {
+            for (i <- Range(k+1, dim._1)) {
+                for (j <- Range(k+1, dim._1)) {
+                    val res = (det.get(i, j) * det.get(k, k) - det.get(i, k) * det.get(k, j))
+                    if (k == 0) {
+                        det.set((i, j), res)
+                    }
+                    else {
+                        det.set((i, j), res / det.get(k-1, k-1))
+                    }
+                }
+            }
+        }
+        det.get(dim._1 -1, dim._2 - 1)
     }
 
     lazy val adjunct = {
@@ -49,6 +70,7 @@ private class Matrix(val elements: Array[Array[Quotient]]) {
             .mkString("(", " ", ")")).mkString("\n")
     }
 
+    def deepcopy = new Matrix(elements.map(_.map(_.clone())))
 }
 
 object Matrix {

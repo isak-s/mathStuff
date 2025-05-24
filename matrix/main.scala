@@ -19,5 +19,6 @@ def main = {
 
     println(s"${m}\n*\n${m2}\n=\n${m*m2} \n\n" )
     println(s"3\n*\n${m2}\n=\n${3 * m2} \n\n")
-    println(s"7\n*\n${m2}\n=\n${7 * m2}")
+    println(s"7\n*\n${m2}\n=\n${7 * m2}\n\n")
+    println(s"det\n${m}\n=\n${m.determinant}\n\n")
 }
