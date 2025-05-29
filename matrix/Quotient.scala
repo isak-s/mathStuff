@@ -24,6 +24,12 @@ private class Quotient(val num: Int, val den: Int) extends Cloneable {
     override def clone: Quotient = {
         new Quotient(num, den)
     }
+
+    override def equals(other: Any): Boolean = other match {
+        case that: Quotient => this.num * that.den == that.num * this.den
+        case that: Int => this.num == that * this.den
+        case _ => false
+    }
 }
 
 object Quotient {
@@ -35,7 +41,14 @@ object Quotient {
 
         else {
             val d = gcd(den, num)
-            new Quotient(num/d, den/d)
+            if (den < 0) {
+                // If the denominator is negative, Move the negative to the numerator,
+                // If both happen to be negative, this turns it positive
+                new Quotient(-num/d, -den/d)
+            }
+            else {
+                new Quotient(num/d, den/d)
+                }
         }
     }
     def fromRational() = {
@@ -59,7 +72,18 @@ object Quotient {
     extension (inlineContext: StringContext)
         def q(args: Any*): Quotient = {
             val raw = inlineContext.s(args*)
-            val Array(num, den) = raw.split("/").map(_.trim)
-            Quotient(num.toInt, den.toInt)
+            val operands = raw.split("/").map(_.trim).map(_.toInt)
+            operands.length match {
+            case 2 =>
+                Quotient(operands(0), operands(1))
+            case 3 =>
+                Quotient(operands(0) * operands(1), operands(2))
+            case 4 =>
+                Quotient(operands(0) * operands(3), operands(2) * operands(1))
+            case x if x > 4 =>
+                throw new IllegalArgumentException(s"Too many operands in '$raw'. Use at most 4 parts.")
+            case _ =>
+                throw new IllegalArgumentException(s"Invalid quotient format: '$raw'")
+            }
         }
 }
