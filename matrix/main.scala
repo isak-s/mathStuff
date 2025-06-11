@@ -16,6 +16,8 @@ def main = {
     }
     val m3 = Matrix(Array(1,2,3), Array(3, 2, 1), Array(2, 1, 3))
 
+    val m4 = Matrix(Array(q"2/7", 0, 1), Array(1, 0, 1), Array(0, 1, 0))
+
     // println(s"${m}\n*\n${m2}\n=\n${m*m2}\n\n" )
     // println(s"3\n*\n${m2}\n=\n${3 * m2}\n\n")
     // println(s"7\n*\n${m2}\n=\n${7 * m2}\n\n")
@@ -24,4 +26,11 @@ def main = {
     println(s"adjugate of \n${m}\n=\n${m.adjungate}\n\n")
     println(s"inverse of \n${m}\n=\n${m.inverse}\n\n")
     println(s"inverse of \n${m3}\n=\n${m3.inverse}\n\n")
+
+    println(s"det\n${m4}\n=\n${m4.determinant}\n\n")
+
+    println(s"Eigenvalues of \n${m3}\n=\n${}\n\n")
+
+    m3.eigenvalues.foreach(println)
+    m3.eigenvalues.map(_.toDouble).foreach(println)
 }

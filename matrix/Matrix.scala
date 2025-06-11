@@ -98,7 +98,68 @@ private class Matrix(val elements: Array[Array[Quotient]]) {
         Matrix.determinant(m) * sign
     }
 
-    override def toString(): String = {
+    private def qrDecompose: (Matrix, Matrix) = {
+        val n = dim._1
+        require(dim._1 == dim._2, "QR decomposition requires square matrix")
+
+        val Q = Matrix.zeroMatrix((n, n))
+        val R = Matrix.zeroMatrix((n, n))
+
+        val Acols = Array.tabulate(n)(j => (0 until n).map(i => get(i, j)).toArray)
+
+        val Qcols = Array.ofDim[Array[Quotient]](n)
+
+        for (j <- 0 until n) {
+            var v = Acols(j).clone()
+
+            for (i <- 0 until j) {
+                val qi = Qcols(i)
+                val rij = (qi zip Acols(j)).map { case (a, b) => a * b }.reduce(_ + _)
+                R.set((i, j), rij)
+                for (k <- 0 until n) v(k) = v(k) - qi(k) * rij
+            }
+
+            val normSq = v.map(x => x * x).reduce(_ + _)
+            val norm = normSq.sqrt
+            require(norm != 0.0, s"Zero norm on column $j — matrix may be singular or linearly dependent")
+
+            val qj = v.map(x => x / Quotient.fromDouble(norm)) // convert to Quotient
+            Qcols(j) = qj
+            for (i <- 0 until n) {
+                Q.set((i, j), qj(i))
+            }
+            R.set((j, j), Quotient.fromDouble(norm))
+        }
+
+        (Q, R)
+    }
+
+
+
+    private def qrEigenvalues(iterations: Int): Array[Quotient] = {
+        require(dim._1 == dim._2, "Eigenvalue computation requires square matrix")
+        val tolerance = 1e-6
+        var A = deepcopy
+        var converged = false
+
+        var i = 0
+        while (i < iterations && !hasConverged(A, tolerance)) {
+            val (q, r) = A.qrDecompose
+            A = r * q
+            i += 1
+        }
+
+        (0 until dim._1).map(i => A.get((i, i))).toArray
+    }
+
+    private def hasConverged(A: Matrix, tolerance: Double): Boolean = {
+        !(for (i <- 0 until A.dim._1; j <- 0 until A.dim._2 if i != j)
+            yield A.get(i, j).toDouble.abs > tolerance).exists(identity)
+    }
+
+    def eigenvalues = qrEigenvalues(50)
+
+        override def toString(): String = {
         val maxLength = elements.flatten.map(_.toString.length).max
         elements.map(row => row
             .map(n => n.toString + " " * (maxLength - n.toString.length))

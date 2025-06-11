@@ -16,6 +16,18 @@ private class Quotient(val num: Int, val den: Int) extends Cloneable {
     infix def +(o: Quotient) = Quotient(num*o.den + o.num*den, den*o.den)
     infix def -(o: Quotient) = Quotient(num*o.den - o.num*den, den*o.den)
 
+    def sqrt: Double = {
+        // val approx =
+        Math.sqrt(this.toDouble)
+        // val denom = 10000 // or higher for better precision
+        // val num = (approx * denom).round.toInt
+        // Quotient(num, denom)
+    }
+
+    def toDouble: Double = {
+        num / den.toFloat
+    }
+
     override def toString(): String = {
         if (den == 1) {s"${num}"}
         else {s"${num}/${den}"}
@@ -51,8 +63,10 @@ object Quotient {
                 }
         }
     }
-    def fromRational() = {
-        ???
+
+    def fromDouble(d: Double): Quotient = {
+        val scale = 1000000
+        Quotient((d * scale).toInt, scale)
     }
 
     def gcd(a: Int, b: Int): Int = {
