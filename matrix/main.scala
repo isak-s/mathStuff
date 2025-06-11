@@ -18,6 +18,8 @@ def main = {
 
     val m4 = Matrix(Array(q"2/7", 0, 1), Array(1, 0, 1), Array(0, 1, 0))
 
+    val m5 = Matrix(Array(1, 0, 1), Array(0, 1, 0), Array(0, 0, 1))
+
     // println(s"${m}\n*\n${m2}\n=\n${m*m2}\n\n" )
     // println(s"3\n*\n${m2}\n=\n${3 * m2}\n\n")
     // println(s"7\n*\n${m2}\n=\n${7 * m2}\n\n")
@@ -29,8 +31,9 @@ def main = {
 
     println(s"det\n${m4}\n=\n${m4.determinant}\n\n")
 
-    println(s"Eigenvalues of \n${m3}\n=\n${}\n\n")
+    println(s"Eigenvalues of \n${m3}\n=\n")
 
-    m3.eigenvalues.foreach(println)
-    m3.eigenvalues.map(_.toDouble).foreach(println)
+    val eig = m3.eigenvalues
+    // eig.foreach(println)
+    eig.map(_.toDouble).foreach(println)
 }

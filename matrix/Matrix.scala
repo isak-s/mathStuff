@@ -134,30 +134,28 @@ private class Matrix(val elements: Array[Array[Quotient]]) {
         (Q, R)
     }
 
-
-
     private def qrEigenvalues(iterations: Int): Array[Quotient] = {
         require(dim._1 == dim._2, "Eigenvalue computation requires square matrix")
         val tolerance = 1e-6
-        var A = deepcopy
+        var A = deepcopy.elements.flatten.map(_.toDouble)
         var converged = false
 
         var i = 0
         while (i < iterations && !hasConverged(A, tolerance)) {
-            val (q, r) = A.qrDecompose
-            A = r * q
+            A = Matrix.qrDecomposeWithDoubles(A)
             i += 1
         }
 
-        (0 until dim._1).map(i => A.get((i, i))).toArray
+        (0 until dim._1).map(i => Quotient.fromDouble(A(i * dim._1 + i))).toArray
     }
 
-    private def hasConverged(A: Matrix, tolerance: Double): Boolean = {
-        !(for (i <- 0 until A.dim._1; j <- 0 until A.dim._2 if i != j)
-            yield A.get(i, j).toDouble.abs > tolerance).exists(identity)
+    private def hasConverged(A: Array[Double], tolerance: Double): Boolean = {
+        val n = Math.sqrt(A.length).toInt
+        !(for (i <- 1 until n; j <- 0 until i)
+            yield A(i * n + j).abs > tolerance).exists(identity)
     }
 
-    def eigenvalues = qrEigenvalues(50)
+    def eigenvalues = qrEigenvalues(200)
 
         override def toString(): String = {
         val maxLength = elements.flatten.map(_.toString.length).max
@@ -216,4 +214,46 @@ object Matrix {
     implicit class MatrixScalarOps(scalar: Int) extends AnyVal {
         infix def *(matrix: Matrix): Matrix = matrix * scalar
     }
+
+    private def qrDecomposeWithDoubles(A: Array[Double]): Array[Double] = {
+        val nn: Double = Math.sqrt(A.length)
+        require(nn % 1 == 0, "QR decomposition requires square matrix")
+        val n = nn.toInt
+
+        val Q = Array.fill(n * n)(0.0)
+        val R = Array.fill(n * n)(0.0)
+
+        // Extract columns of A
+        val Acols = Array.tabulate(n)(j => Array.tabulate[Double](n)(i => A(i * n + j)))
+        val Qcols = Array.ofDim[Array[Double]](n)
+
+        for (j <- 0 until n) {
+            var v = Acols(j).clone()
+            for (i <- 0 until j) {
+                val qi = Qcols(i)
+                val rij = (qi zip v).map { case (a, b) => a * b }.sum
+                R(i * n + j) = rij
+                for (k <- 0 until n) v.update(k, v(k) - qi(k) * rij)
+            }
+
+            val norm = Math.sqrt(v.map(x => x * x).sum)
+            require(norm != 0.0, s"Zero norm on column $j — matrix may be singular or linearly dependent")
+
+            val qj = v.map(_ / norm)
+            Qcols(j) = qj
+
+            for (i <- 0 until n) {
+                Q(i * n + j) = qj(i)
+            }
+            R(j * n + j) = norm
+        }
+
+        // combines matrix of r and q and returns
+        Array.tabulate(n * n) { idx =>
+            val row = idx / n
+            val col = idx % n
+            (0 until n).map(k => R(row * n + k) * Q(k * n + col)).sum
+        }
+    }
+
 }

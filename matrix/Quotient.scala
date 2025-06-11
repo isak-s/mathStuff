@@ -2,7 +2,7 @@ package math
 
 // numerator = num
 // denominator = den
-private class Quotient(val num: Int, val den: Int) extends Cloneable {
+private class Quotient(val num: Long, val den: Long) extends Cloneable {
 
     infix def *(o: Int) = Quotient(num*o, den)
     infix def /(o: Int) = Quotient(num, den*o)
@@ -46,7 +46,7 @@ private class Quotient(val num: Int, val den: Int) extends Cloneable {
 
 object Quotient {
 
-    def apply(num: Int, den: Int) = {
+    def apply(num: Long, den: Long) = {
         if (num == 0) {
             new Quotient(0, 1)
         }
@@ -65,11 +65,16 @@ object Quotient {
     }
 
     def fromDouble(d: Double): Quotient = {
-        val scale = 1000000
+        val scale: Long = 1000000
         Quotient((d * scale).toInt, scale)
     }
 
-    def gcd(a: Int, b: Int): Int = {
+    // def gcd(a: Int, b: Int): Int = {
+    //     if (b == 0) { a.abs }
+    //     else { gcd(b, a % b) }
+    // }
+
+    def gcd(a: Long, b: Long): Long = {
         if (b == 0) { a.abs }
         else { gcd(b, a % b) }
     }
